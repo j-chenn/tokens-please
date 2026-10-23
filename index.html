@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4EAD5">
+<title>Tokens Please</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main id="app">
+
+  <!-- 1. pick a token package -->
+  <section id="screen-home" class="screen" hidden>
+    <div class="asset hero" data-src="assets/img/robot.png" data-label="robot self-portrait goes here"></div>
+    <h1 class="title">TOKENS<br>PLEASE</h1>
+    <p class="subtitle">this robot artist runs on tokens.<br>no tokens, no art.</p>
+    <p id="home-banner" class="banner" hidden>the robot is waiting… buy more tokens to keep it going!</p>
+    <h2>how many tokens?</h2>
+    <div class="choices" id="package-list"></div>
+    <button class="link" id="btn-home-receipt" hidden>nah, i'm done. gimme my receipt</button>
+  </section>
+
+  <!-- 2. pick a payment method -->
+  <section id="screen-pay" class="screen" hidden>
+    <div class="topbar">
+      <button class="back" data-go="home">← back</button>
+      <span class="chip" id="pay-chip"></span>
+    </div>
+    <h2>how do you want to pay for these tokens?</h2>
+    <div class="choices">
+      <button class="choice" data-method="dance">
+        <span class="choice-title">💃 interpretive dancing</span>
+        <small>perform for the robot. the robot judges.</small>
+      </button>
+      <button class="choice" data-method="trivia">
+        <span class="choice-title">🧠 trivia</span>
+        <small>3 questions. brain required.</small>
+      </button>
+      <button class="choice" data-method="flappy">
+        <span class="choice-title">🎮 pro gamer moment</span>
+        <small>flappy robot. hit the target score.</small>
+      </button>
+      <button class="choice ghost" id="btn-real-monies">
+        <span class="choice-title">💵 real monies</span>
+        <small>the boring option</small>
+      </button>
+    </div>
+  </section>
+
+  <!-- 3a. interpretive dance -->
+  <section id="screen-dance" class="screen" hidden>
+    <div class="topbar">
+      <button class="back" data-go="pay">← back</button>
+      <button class="chip" id="btn-mute" aria-label="toggle music">🔊</button>
+    </div>
+    <h2>interpretive dance</h2>
+    <p class="hint">perform this for the robot:</p>
+    <div class="card prompt-card" id="dance-prompt"></div>
+    <button class="link" id="btn-dance-reroll">🎲 different prompt please</button>
+    <p class="verdict" id="dance-verdict-msg" hidden></p>
+    <div class="controls">
+      <div id="dance-hold-wrap" class="controls">
+        <button class="btn hold" id="btn-hold"><span id="hold-label">ROBOT ONLY: hold to evaluate</span></button>
+        <p class="hint tiny center-text">humans: hand your phone to the robot when done</p>
+      </div>
+      <div id="dance-verdict" hidden>
+        <p class="big center-text">ROBOT VERDICT:</p>
+        <div class="row">
+          <button class="btn blue" id="btn-approve">approve ✓</button>
+          <button class="btn" id="btn-disapprove">reject ✗</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3b. trivia -->
+  <section id="screen-trivia" class="screen" hidden>
+    <div class="topbar">
+      <button class="back" data-go="pay">← back</button>
+      <span class="chip" id="trivia-chip"></span>
+    </div>
+    <div id="trivia-q-wrap" class="stack">
+      <p class="hint" id="trivia-progress"></p>
+      <h2 id="trivia-q"></h2>
+      <div class="choices" id="trivia-answers"></div>
+    </div>
+    <div id="trivia-result" class="stack center-text" hidden>
+      <p class="huge" id="trivia-score"></p>
+      <p id="trivia-msg"></p>
+      <button class="btn orange" id="btn-trivia-collect" hidden>collect tokens →</button>
+      <button class="btn" id="btn-trivia-retry" hidden>try again ↻</button>
+    </div>
+  </section>
+
+  <!-- 3c. flappy -->
+  <section id="screen-flappy" class="screen" hidden>
+    <div class="topbar">
+      <button class="back" data-go="pay">← back</button>
+      <span class="chip" id="flappy-chip"></span>
+    </div>
+    <div class="game-wrap">
+      <canvas id="flappy-canvas"></canvas>
+      <div class="game-overlay" id="flappy-over" hidden>
+        <p class="big" id="flappy-over-title"></p>
+        <p id="flappy-over-msg"></p>
+        <button class="btn orange" id="btn-flappy-retry">again ↻</button>
+        <button class="btn orange" id="btn-flappy-collect">collect tokens →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. payment accepted -->
+  <section id="screen-success" class="screen center" hidden>
+    <p class="big">PAYMENT ACCEPTED</p>
+    <div class="asset hero" data-src="assets/img/robot-happy.png" data-label="happy robot goes here"></div>
+    <p class="token-gain" id="success-amount"></p>
+    <p id="success-method"></p>
+    <button class="btn orange" id="btn-success-go"></button>
+  </section>
+
+  <!-- 5. the drawing session -->
+  <section id="screen-draw" class="screen" hidden>
+    <p class="status" id="draw-status"></p>
+    <div class="card" id="prompt-view" hidden>
+      <p class="label">the robot shall draw:</p>
+      <p class="prompt-text" id="prompt-text"></p>
+      <button class="link" id="btn-edit-prompt">✏️ add more details</button>
+    </div>
+    <div class="card" id="prompt-edit" hidden>
+      <label class="label" for="prompt-input">what should the robot draw?</label>
+      <textarea id="prompt-input" rows="3" maxlength="200" placeholder="a cat riding a pumpkin into battle…"></textarea>
+      <button class="btn blue" id="btn-lock-prompt">lock it in</button>
+    </div>
+    <div class="counter">
+      <span id="token-count">0</span>
+      <span class="label">tokens left</span>
+    </div>
+    <div class="controls">
+      <button class="btn orange" id="btn-start">START ▶</button>
+      <button class="btn" id="btn-pause" hidden>PAUSE ❚❚</button>
+      <button class="btn orange" id="btn-buy-more" hidden>buy more tokens</button>
+      <button class="btn" id="btn-done">drawing is done ✓</button>
+    </div>
+  </section>
+
+  <!-- 6. receipt -->
+  <section id="screen-receipt" class="screen" hidden>
+    <div class="receipt-wrap"><div class="receipt" id="receipt"></div></div>
+    <p class="hint tiny center-text">📸 screenshot this for your records</p>
+    <button class="link" id="btn-new-customer">new customer</button>
+  </section>
+
+</main>
+
+<div class="modal" id="modal-monies" hidden>
+  <div class="card">
+    <p class="big">✗ DECLINED ✗</p>
+    <p>you cannot pay with real monies here.<br>this is a monies-free establishment.</p>
+    <button class="btn" data-close>ok sorry</button>
+  </div>
+</div>
+
+<div class="modal out" id="overlay-out" hidden>
+  <div class="card">
+    <p class="huge">OUT OF TOKENS</p>
+    <p>the robot has stopped.<br>the robot is powerless.</p>
+    <button class="btn orange" id="btn-out-buy">buy more tokens</button>
+    <button class="btn" id="btn-out-done">drawing is done ✓</button>
+  </div>
+</div>
+
+<canvas id="confetti"></canvas>
+
+<script src="js/data.js"></script>
+<script src="js/flappy.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
